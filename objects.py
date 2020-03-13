@@ -72,6 +72,7 @@ class P1GUN(pygame.sprite.Sprite):
             elif self.change_x < 0:
                 # Otherwise if we are moving left, do the opposite.
                 self.rect.left = block.rect.right
+            self.change_x = 0
         # For query boxes
         box_hit_list = pygame.sprite.spritecollide(self, self.level.query_box_list, False)
         for box in box_hit_list:
@@ -82,6 +83,7 @@ class P1GUN(pygame.sprite.Sprite):
             elif self.change_x < 0:
                 # Otherwise if we are moving left, do the opposite.
                 self.rect.left = box.rect.right
+            self.change_x = 0
         # For active players
         player_hit_list = pygame.sprite.spritecollide(self, player.active_sprite_list, False)
         for sprite in player_hit_list:
@@ -90,8 +92,7 @@ class P1GUN(pygame.sprite.Sprite):
                 self.rect.right = sprite.rect.left
             elif self.change_x < 0:
                 self.rect.left = sprite.rect.right
-            # Stop our vertical movement
-            self.change_y = 0
+            self.change_x = 0
 
         # Move up/down
         self.rect.y += self.change_y
@@ -107,6 +108,7 @@ class P1GUN(pygame.sprite.Sprite):
                 self.rect.top = block.rect.bottom
             # Stop our vertical movement
             self.change_y = 0
+            self.change_x = 0
             if isinstance(block, MovingPlatform):
                 self.rect.x += block.change_x
         # For query boxes
@@ -119,6 +121,7 @@ class P1GUN(pygame.sprite.Sprite):
                 self.rect.top = box.rect.bottom
             # Stop our vertical movement
             self.change_y = 0
+            self.change_x = 0
         # For active players
         player_hit_list = pygame.sprite.spritecollide(self, player.active_sprite_list, False)
         for sprite in player_hit_list:
@@ -129,6 +132,7 @@ class P1GUN(pygame.sprite.Sprite):
                 self.rect.top = sprite.rect.bottom
             # Stop our vertical movement
             self.change_y = 0
+            self.change_x = 0
             if self.rect.bottom == sprite.rect.top:
                 self.rect.x += sprite.change_x
 
@@ -141,11 +145,15 @@ class P1GUN(pygame.sprite.Sprite):
 
         # See if we are on the ground.
         if self.rect.y >= constants.SCREEN_HEIGHT - self.rect.height and self.change_y >= 0:
-            self.change_y = 0
-            self.rect.y = constants.SCREEN_HEIGHT - self.rect.height
+            self.kill()
 
-    def toss(self):
-        self.change_y = -4
+    def toss_left(self):
+        self.change_y = - 3
+        self.change_x = - 7
+
+    def toss_right(self):
+        self.change_y = - 3
+        self.change_x = 7
 
 
 class P2GUN(pygame.sprite.Sprite):
@@ -189,6 +197,7 @@ class P2GUN(pygame.sprite.Sprite):
             elif self.change_x < 0:
                 # Otherwise if we are moving left, do the opposite.
                 self.rect.left = block.rect.right
+            self.change_x = 0
         # For query boxes
         box_hit_list = pygame.sprite.spritecollide(self, self.level.query_box_list, False)
         for box in box_hit_list:
@@ -199,6 +208,7 @@ class P2GUN(pygame.sprite.Sprite):
             elif self.change_x < 0:
                 # Otherwise if we are moving left, do the opposite.
                 self.rect.left = box.rect.right
+            self.change_x = 0
         # For active players
         player_hit_list = pygame.sprite.spritecollide(self, player.active_sprite_list, False)
         for sprite in player_hit_list:
@@ -207,8 +217,7 @@ class P2GUN(pygame.sprite.Sprite):
                 self.rect.right = sprite.rect.left
             elif self.change_x < 0:
                 self.rect.left = sprite.rect.right
-            # Stop our vertical movement
-            self.change_y = 0
+            self.change_x = 0
 
         # Move up/down
         self.rect.y += self.change_y
@@ -224,6 +233,7 @@ class P2GUN(pygame.sprite.Sprite):
                 self.rect.top = block.rect.bottom
             # Stop our vertical movement
             self.change_y = 0
+            self.change_x = 0
             if isinstance(block, MovingPlatform):
                 self.rect.x += block.change_x
         # For query boxes
@@ -236,6 +246,7 @@ class P2GUN(pygame.sprite.Sprite):
                 self.rect.top = box.rect.bottom
             # Stop our vertical movement
             self.change_y = 0
+            self.change_x = 0
         # For active players
         player_hit_list = pygame.sprite.spritecollide(self, player.active_sprite_list, False)
         for sprite in player_hit_list:
@@ -246,6 +257,7 @@ class P2GUN(pygame.sprite.Sprite):
                 self.rect.top = sprite.rect.bottom
             # Stop our vertical movement
             self.change_y = 0
+            self.change_x = 0
             if self.rect.bottom == sprite.rect.top:
                 self.rect.x += sprite.change_x
 
@@ -258,20 +270,15 @@ class P2GUN(pygame.sprite.Sprite):
 
         # See if we are on the ground.
         if self.rect.y >= constants.SCREEN_HEIGHT - self.rect.height and self.change_y >= 0:
-            self.change_y = 0
-            self.rect.y = constants.SCREEN_HEIGHT - self.rect.height
+            self.kill()
 
-    def toss(self):
-        """ Called when user hits 'jump' button. """
-        # move down a bit and see if there is a platform below us.
-        # Move down 2 pixels because it doesn't work well if we only move down
-        # 1 when working with a platform moving down.
-        self.rect.y += 2
-        platform_hit_list = pygame.sprite.spritecollide(self, self.level.platform_list, False)
-        self.rect.y -= 2
-        # If it is ok to jump, set our speed upwards
-        if len(platform_hit_list) > 0 or self.rect.bottom >= constants.SCREEN_HEIGHT:
-            self.change_y = -4
+    def toss_left(self):
+        self.change_y = - 3
+        self.change_x = - 7
+
+    def toss_right(self):
+        self.change_y = - 3
+        self.change_x = 7
 
 
 class P1SWORD(pygame.sprite.Sprite):
@@ -315,6 +322,7 @@ class P1SWORD(pygame.sprite.Sprite):
             elif self.change_x < 0:
                 # Otherwise if we are moving left, do the opposite.
                 self.rect.left = block.rect.right
+            self.change_x = 0
         # For query boxes
         box_hit_list = pygame.sprite.spritecollide(self, self.level.query_box_list, False)
         for box in box_hit_list:
@@ -325,6 +333,7 @@ class P1SWORD(pygame.sprite.Sprite):
             elif self.change_x < 0:
                 # Otherwise if we are moving left, do the opposite.
                 self.rect.left = box.rect.right
+            self.change_x = 0
         # For active players
         player_hit_list = pygame.sprite.spritecollide(self, player.active_sprite_list, False)
         for sprite in player_hit_list:
@@ -333,8 +342,7 @@ class P1SWORD(pygame.sprite.Sprite):
                 self.rect.right = sprite.rect.left
             elif self.change_x < 0:
                 self.rect.left = sprite.rect.right
-            # Stop our vertical movement
-            self.change_y = 0
+            self.change_x = 0
 
         # Move up/down
         self.rect.y += self.change_y
@@ -350,6 +358,7 @@ class P1SWORD(pygame.sprite.Sprite):
                 self.rect.top = block.rect.bottom
             # Stop our vertical movement
             self.change_y = 0
+            self.change_x = 0
             if isinstance(block, MovingPlatform):
                 self.rect.x += block.change_x
         # For query boxes
@@ -362,6 +371,7 @@ class P1SWORD(pygame.sprite.Sprite):
                 self.rect.top = box.rect.bottom
             # Stop our vertical movement
             self.change_y = 0
+            self.change_x = 0
         # For active players
         player_hit_list = pygame.sprite.spritecollide(self, player.active_sprite_list, False)
         for sprite in player_hit_list:
@@ -372,6 +382,7 @@ class P1SWORD(pygame.sprite.Sprite):
                 self.rect.top = sprite.rect.bottom
             # Stop our vertical movement
             self.change_y = 0
+            self.change_x = 0
             if self.rect.bottom == sprite.rect.top:
                 self.rect.x += sprite.change_x
 
@@ -384,20 +395,15 @@ class P1SWORD(pygame.sprite.Sprite):
 
         # See if we are on the ground.
         if self.rect.y >= constants.SCREEN_HEIGHT - self.rect.height and self.change_y >= 0:
-            self.change_y = 0
-            self.rect.y = constants.SCREEN_HEIGHT - self.rect.height
+            self.kill()
 
-    def toss(self):
-        """ Called when user hits 'jump' button. """
-        # move down a bit and see if there is a platform below us.
-        # Move down 2 pixels because it doesn't work well if we only move down
-        # 1 when working with a platform moving down.
-        self.rect.y += 2
-        platform_hit_list = pygame.sprite.spritecollide(self, self.level.platform_list, False)
-        self.rect.y -= 2
-        # If it is ok to jump, set our speed upwards
-        if len(platform_hit_list) > 0 or self.rect.bottom >= constants.SCREEN_HEIGHT:
-            self.change_y = -4
+    def toss_left(self):
+        self.change_y = - 3
+        self.change_x = - 7
+
+    def toss_right(self):
+        self.change_y = - 3
+        self.change_x = 7
 
 
 class P2SWORD(pygame.sprite.Sprite):
@@ -441,6 +447,7 @@ class P2SWORD(pygame.sprite.Sprite):
             elif self.change_x < 0:
                 # Otherwise if we are moving left, do the opposite.
                 self.rect.left = block.rect.right
+            self.change_x = 0
         # For query boxes
         box_hit_list = pygame.sprite.spritecollide(self, self.level.query_box_list, False)
         for box in box_hit_list:
@@ -451,6 +458,7 @@ class P2SWORD(pygame.sprite.Sprite):
             elif self.change_x < 0:
                 # Otherwise if we are moving left, do the opposite.
                 self.rect.left = box.rect.right
+            self.change_x = 0
         # For active players
         player_hit_list = pygame.sprite.spritecollide(self, player.active_sprite_list, False)
         for sprite in player_hit_list:
@@ -459,8 +467,7 @@ class P2SWORD(pygame.sprite.Sprite):
                 self.rect.right = sprite.rect.left
             elif self.change_x < 0:
                 self.rect.left = sprite.rect.right
-            # Stop our vertical movement
-            self.change_y = 0
+            self.change_x = 0
 
         # Move up/down
         self.rect.y += self.change_y
@@ -476,6 +483,7 @@ class P2SWORD(pygame.sprite.Sprite):
                 self.rect.top = block.rect.bottom
             # Stop our vertical movement
             self.change_y = 0
+            self.change_x = 0
             if isinstance(block, MovingPlatform):
                 self.rect.x += block.change_x
         # For query boxes
@@ -488,6 +496,7 @@ class P2SWORD(pygame.sprite.Sprite):
                 self.rect.top = box.rect.bottom
             # Stop our vertical movement
             self.change_y = 0
+            self.change_x = 0
         # For active players
         player_hit_list = pygame.sprite.spritecollide(self, player.active_sprite_list, False)
         for sprite in player_hit_list:
@@ -498,6 +507,7 @@ class P2SWORD(pygame.sprite.Sprite):
                 self.rect.top = sprite.rect.bottom
             # Stop our vertical movement
             self.change_y = 0
+            self.change_x = 0
             if self.rect.bottom == sprite.rect.top:
                 self.rect.x += sprite.change_x
 
@@ -510,17 +520,12 @@ class P2SWORD(pygame.sprite.Sprite):
 
         # See if we are on the ground.
         if self.rect.y >= constants.SCREEN_HEIGHT - self.rect.height and self.change_y >= 0:
-            self.change_y = 0
-            self.rect.y = constants.SCREEN_HEIGHT - self.rect.height
+            self.kill()
 
-    def toss(self):
-        """ Called when user hits 'jump' button. """
-        # move down a bit and see if there is a platform below us.
-        # Move down 2 pixels because it doesn't work well if we only move down
-        # 1 when working with a platform moving down.
-        self.rect.y += 2
-        platform_hit_list = pygame.sprite.spritecollide(self, self.level.platform_list, False)
-        self.rect.y -= 2
-        # If it is ok to jump, set our speed upwards
-        if len(platform_hit_list) > 0 or self.rect.bottom >= constants.SCREEN_HEIGHT:
-            self.change_y = -4
+    def toss_left(self):
+        self.change_y = - 3
+        self.change_x = - 7
+
+    def toss_right(self):
+        self.change_y = - 3
+        self.change_x = 7

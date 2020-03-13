@@ -6,12 +6,10 @@ import objects
 import player
 from buttons import exit_button, music_play_button, music_skip_button, music_previous_button
 
-verbose = True
+verbose = False
 MUSIC = True
 INTRO = False
 FPS = True
-
-# TODO Death at bottom of world
 
 
 def INSTRUCTION_PAGE():
@@ -329,24 +327,36 @@ def P1_THROW_WEAPON():
     if p1_has_gun:
         del Weapon_list[:]
         Weapon_list.append(objects.P1GUN())
-
         for WEAPON in Weapon_list:
             WEAPON.level = current_level
-            WEAPON.rect.x = x
-            WEAPON.rect.y = y
-            WEAPON.update()
+            if player1.direction == "R":
+                WEAPON.rect.x = x + 20
+                WEAPON.rect.y = y + 6
+                WEAPON.update()
+                WEAPON.toss_right()
+            elif player1.direction == "L":
+                WEAPON.rect.x = x - 18
+                WEAPON.rect.y = y + 6
+                WEAPON.update()
+                WEAPON.toss_left()
             active_weapon_list.add(WEAPON)
         p1_has_gun = False
         player1.lose_gun()
     if p1_has_sword:
         del Weapon_list[:]
         Weapon_list.append(objects.P1SWORD())
-
         for WEAPON in Weapon_list:
             WEAPON.level = current_level
-            WEAPON.rect.x = x
-            WEAPON.rect.y = y
-            WEAPON.update()
+            if player1.direction == "R":
+                WEAPON.rect.x = x + 20
+                WEAPON.rect.y = y + 6
+                WEAPON.update()
+                WEAPON.toss_right()
+            elif player1.direction == "L":
+                WEAPON.rect.x = x - 18
+                WEAPON.rect.y = y + 6
+                WEAPON.update()
+                WEAPON.toss_left()
             active_weapon_list.add(WEAPON)
         p1_has_sword = False
         player1.lose_sword()
@@ -359,25 +369,36 @@ def P2_THROW_WEAPON():
     if p2_has_gun:
         del Weapon_list[:]
         Weapon_list.append(objects.P2GUN())
-
         for WEAPON in Weapon_list:
             WEAPON.level = current_level
-            WEAPON.rect.x = x
-            WEAPON.rect.y = y
-            WEAPON.update()
-            WEAPON.toss()
+            if player2.direction == "R":
+                WEAPON.rect.x = x + 20
+                WEAPON.rect.y = y + 6
+                WEAPON.update()
+                WEAPON.toss_right()
+            elif player2.direction == "L":
+                WEAPON.rect.x = x - 18
+                WEAPON.rect.y = y + 6
+                WEAPON.update()
+                WEAPON.toss_left()
             active_weapon_list.add(WEAPON)
         p2_has_gun = False
         player2.lose_gun()
     if p2_has_sword:
         del Weapon_list[:]
         Weapon_list.append(objects.P2SWORD())
-
         for WEAPON in Weapon_list:
             WEAPON.level = current_level
-            WEAPON.rect.x = x
-            WEAPON.rect.y = y
-            WEAPON.update()
+            if player2.direction == "R":
+                WEAPON.rect.x = x + 20
+                WEAPON.rect.y = y + 6
+                WEAPON.update()
+                WEAPON.toss_right()
+            elif player2.direction == "L":
+                WEAPON.rect.x = x - 18
+                WEAPON.rect.y = y + 6
+                WEAPON.update()
+                WEAPON.toss_left()
             active_weapon_list.add(WEAPON)
         p2_has_sword = False
         player2.lose_sword()
@@ -448,6 +469,39 @@ def player_bullet_manager():
             bullet.x += bullet.vel
         else:
             p2_bullets.pop(p2_bullets.index(bullet))
+
+
+def grab_player_manager():
+    global grab_p1, grab_p2, p1_escape, p2_escape
+    if p1_escape == 20:
+        grab_p2 = False
+        player.grab_p2 = False
+        p1_escape = 0
+        PAUSE_GAME()
+    if p2_escape == 20:
+        grab_p1 = False
+        player.grab_p1 = False
+        p2_escape = 0
+        PAUSE_GAME()
+    # TODO jump free
+    if grab_p2:
+        if player1.direction == "R":
+            player2.rect.left = player1.rect.right
+            player2.rect.y = player1.rect.y - 4
+            player2.direction = "R"
+        if player1.direction == "L":
+            player2.rect.right = player1.rect.left
+            player2.rect.y = player1.rect.y - 4
+            player2.direction = "L"
+    if grab_p1:
+        if player2.direction == "R":
+            player1.rect.left = player2.rect.right
+            player1.rect.y = player2.rect.y - 4
+            player1.direction = "R"
+        if player2.direction == "L":
+            player1.rect.right = player2.rect.left
+            player1.rect.y = player2.rect.y - 4
+            player1.direction = "L"
 
 
 def activate_turrets():
@@ -644,6 +698,21 @@ def turret_bullet_manager():
             t6_bullets.pop(t6_bullets.index(bullet))
 
 
+def turret_cooldown_repeater():
+    global turret_cooldown
+    if turret_cooldown == 35:
+        activate_turrets()
+        turret_cooldown = 0
+    turret_cooldown += 1
+
+
+def fall_off_world():
+    if player.p1_fell_to_death:
+        p2_score()
+    if player.p2_fell_to_death:
+        p1_score()
+
+
 def end_level():
     global level_ending_layer
     global level_ending
@@ -664,7 +733,7 @@ def new_level():
     global player1, player2, P1_img, P2_img
     global current_level
     global active_sprite_list, active_weapon_list
-    global p1_has_gun, p2_has_gun, p1_has_sword, p2_has_sword
+    global p1_has_gun, p2_has_gun, p1_has_sword, p2_has_sword, grab_p2, grab_p1
     global Weapon_list
     global level_starting_frame
 
@@ -704,7 +773,8 @@ def new_level():
     player1.start()
     player2.start()
 
-    p1_has_gun, p2_has_gun, p1_has_sword, p2_has_sword = False, False, False, False
+    p1_has_gun, p2_has_gun, p1_has_sword, p2_has_sword, grab_p2, grab_p1 = False, False, False, False, False, False
+    player.p1_fell_to_death, player.p2_fell_to_death = False, False
 
     Weapon_list = []
 
@@ -741,6 +811,8 @@ def main():
     global p1_has_sword, p2_has_sword
     global p1_gun_direction, p2_gun_direction
     global P1_CALL_WEAPON, P2_CALL_WEAPON
+    global grab_p1, grab_p2, p1_escape, p2_escape
+    global turret_cooldown
 
     # Used to manage how fast the screen updates
     clock = pygame.time.Clock()
@@ -774,6 +846,8 @@ def main():
 
     P1_Score, P2_Score = 0, 0
     P1_win, P2_win = False, False
+    grab_p1, grab_p2 = False, False
+    p1_escape, p2_escape = 0, 0
     p1_bullets, p2_bullets = [], []
 
     t1_bullets, t2_bullets, t3_bullets, t4_bullets, t5_bullets, t6_bullets = [], [], [], [], [], []
@@ -794,31 +868,62 @@ def main():
                     Paused = True
                     PAUSE_GAME()
                 if event.key == pygame.K_UP:
-                    player1.jump()
-                    P1_CALL_WEAPON = 1
+                    if not grab_p1:
+                        player1.jump()
+                        P1_CALL_WEAPON = 1
+                    if grab_p1:
+                        p1_escape += 1
+                        print(str(p1_escape))
                 if event.key == pygame.K_w:
-                    player2.jump()
-                    P2_CALL_WEAPON = 1
+                    if not grab_p2:
+                        player2.jump()
+                        P2_CALL_WEAPON = 1
+                    if grab_p2:
+                        p2_escape += 1
                 if event.key == pygame.K_LEFT:
-                    player1.go_left()
+                    if not grab_p1:
+                        player1.go_left()
                 if event.key == pygame.K_a:
-                    player2.go_left()
+                    if not grab_p2:
+                        player2.go_left()
                 if event.key == pygame.K_RIGHT:
-                    player1.go_right()
+                    if not grab_p1:
+                        player1.go_right()
                 if event.key == pygame.K_d:
-                    player2.go_right()
+                    if not grab_p2:
+                        player2.go_right()
                 if event.key == pygame.K_PERIOD:
-                    # TODO grab player
+                    # TODO jump free
+                    if grab_p2:
+                        grab_p2 = False
+                        player.grab_p2 = False
+                        player.sprite_collided = False
                     if player.p1_touching_weapon is not None:
                         P1_GRAB()
+                    elif not p1_has_gun and not p1_has_sword:
+                        if player.sprite_collided:
+                            if not grab_p1:
+                                if not grab_p2:
+                                    grab_p2 = True
+                                    player.grab_p2 = True
                     elif p1_has_gun or p1_has_sword:
                         P1_THROW_WEAPON()
                     else:
                         pass
                 if event.key == pygame.K_TAB:
-                    # TODO grab player
+                    # TODO jump free
+                    if grab_p1:
+                        grab_p1 = False
+                        player.grab_p1 = False
+                        player.sprite_collided = False
                     if player.p2_touching_weapon is not None:
                         P2_GRAB()
+                    elif not p2_has_gun and not p2_has_sword:
+                        if player.sprite_collided:
+                            if not grab_p2:
+                                if not grab_p1:
+                                    grab_p1 = True
+                                    player.grab_p1 = True
                     elif p2_has_gun or p2_has_sword:
                         P2_THROW_WEAPON()
                     else:
@@ -880,15 +985,15 @@ def main():
         if player2.rect.left < 0:
             player2.rect.left = 0
 
+        grab_player_manager()
+        turret_cooldown_repeater()
+
+        fall_off_world()
+
         # ------- ALL CODE TO DRAW SHOULD GO BELOW THIS COMMENT -------
         current_level.draw(screen)
         active_sprite_list.draw(screen)
         active_weapon_list.draw(screen)
-
-        if turret_cooldown == 35:
-            activate_turrets()
-            turret_cooldown = 0
-        turret_cooldown += 1
 
         # --------- bullet manager ---------
         player_bullet_manager()

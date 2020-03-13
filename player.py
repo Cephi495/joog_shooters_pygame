@@ -6,17 +6,15 @@ from spritesheet_function import SpriteSheet
 
 verbose = False
 
+sprite_collided = False
 WEAPON_X = None
 WEAPON_Y = None
+p1_touching_weapon, p2_touching_weapon = None, None
+grab_p2, grab_p1 = False, False
+p1_fell_to_death, p2_fell_to_death = False, False
 active_sprite_list = pygame.sprite.Group()
 sprite1_group = pygame.sprite.Group()
 sprite2_group = pygame.sprite.Group()
-
-p1_touching_weapon, p2_touching_weapon = None, None
-
-sprite_collided = False
-
-# TODO update touching weapon
 
 
 def SPAWN_WEAPON(x, y):
@@ -83,7 +81,6 @@ class Player1(pygame.sprite.Sprite):
 
         self.has_gun = False
         self.has_sword = False
-
         self.WEAPON = None
 
         # List of sprites we can bump against
@@ -195,7 +192,7 @@ class Player1(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
 
     def update(self):
-        global p1_touching_weapon, p1_weapon_x, p1_weapon_y, sprite_collided
+        global p1_touching_weapon, p1_weapon_x, p1_weapon_y, sprite_collided, grab_p2
 
         """ Move the player1. """
         # Gravity
@@ -285,7 +282,6 @@ class Player1(pygame.sprite.Sprite):
             if self.rect.x + self.width//2 > player.rect.x + player.width//2:
                 self.rect.x += 1
             elif self.rect.x + self.width//2 < player.rect.x + player.width//2:
-                # Otherwise if we are moving left, do the opposite.
                 self.rect.x -= 1
             sprite_collided = True
 
@@ -335,22 +331,23 @@ class Player1(pygame.sprite.Sprite):
             if 40 < abs(abs(self.rect.x + self.width//2) - abs(p1_weapon_x + 8)):
                 p1_touching_weapon = None
                 if verbose:
-                    print("<player.py> " + "P1 not touching")
+                    print("<player.py> " + "P1 not touching weapon")
 
             elif 40 < abs(abs(self.rect.y + self.height//2) - abs(p1_weapon_y + 6)):
                 p1_touching_weapon = None
                 if verbose:
-                    print("<player.py> " + "P1 not touching")
+                    print("<player.py> " + "P1 not touching weapon ")
 
         if sprite_collided:
             player_hit_list = pygame.sprite.spritecollide(self, sprite2_group, False)
             if len(player_hit_list) < 1:
                 sprite_collided = False
                 if verbose:
-                    print("<player.py> " + "P1 touching" + str(sprite_collided))
+                    print("<player.py> " + "P1 touching P2 " + str(sprite_collided))
 
     def calc_grav(self):
         """ Calculate effect of gravity. """
+        global p1_fell_to_death
         if self.change_y == 0:
             self.change_y = 1
         else:
@@ -358,8 +355,8 @@ class Player1(pygame.sprite.Sprite):
 
         # See if we are on the ground.
         if self.rect.y >= constants.SCREEN_HEIGHT - self.rect.height and self.change_y >= 0:
-            self.change_y = 0
-            self.rect.y = constants.SCREEN_HEIGHT - self.rect.height
+            self.kill()
+            p1_fell_to_death = True
 
     def jump(self):
         """ Called when user hits 'jump' button. """
@@ -368,10 +365,15 @@ class Player1(pygame.sprite.Sprite):
         # 1 when working with a platform moving down.
         self.rect.y += 2
         platform_hit_list = pygame.sprite.spritecollide(self, self.level.platform_list, False)
+        box_hit_list = pygame.sprite.spritecollide(self, self.level.query_box_list, False)
+        weapon_hit_list = pygame.sprite.spritecollide(self, objects.active_weapon_list, False)
         self.rect.y -= 2
         # If it is ok to jump, set our speed upwards
-        if len(platform_hit_list) > 0 or self.rect.bottom >= constants.SCREEN_HEIGHT:
-            self.change_y = -12
+        if len(platform_hit_list) > 0 or len(box_hit_list) > 0 or len(weapon_hit_list) > 0:
+            if not grab_p2:
+                self.change_y = -12
+            else:
+                self.change_y = -5
 
     def go_left(self):
         """ Called when the user hits the left arrow. """
@@ -470,7 +472,6 @@ class Player2(pygame.sprite.Sprite):
 
         self.has_gun = False
         self.has_sword = False
-
         self.WEAPON = None
 
         # List of sprites we can bump against
@@ -582,7 +583,7 @@ class Player2(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
 
     def update(self):
-        global p2_touching_weapon, p2_weapon_x, p2_weapon_y, sprite_collided
+        global p2_touching_weapon, p2_weapon_x, p2_weapon_y, sprite_collided, grab_p1
 
         """ Move the player2. """
         # Gravity
@@ -724,22 +725,23 @@ class Player2(pygame.sprite.Sprite):
             if 40 < abs(abs(self.rect.x + self.width // 2) - abs(p2_weapon_x + 8)):
                 p2_touching_weapon = None
                 if verbose:
-                    print("<player.py> " + "P1 not touching")
+                    print("<player.py> " + "P2 not touching weapon")
 
             elif 40 < abs(abs(self.rect.y + self.height // 2) - abs(p2_weapon_y + 6)):
                 p2_touching_weapon = None
                 if verbose:
-                    print("<player.py> " + "P1 not touching")
+                    print("<player.py> " + "P2 not touching weapon")
 
         if sprite_collided:
             player_hit_list = pygame.sprite.spritecollide(self, sprite2_group, False)
             if len(player_hit_list) < 1:
                 sprite_collided = False
                 if verbose:
-                    print("<player.py> " + "P1 touching" + str(sprite_collided))
+                    print("<player.py> " + "P2 touching P1 " + str(sprite_collided))
 
     def calc_grav(self):
         """ Calculate effect of gravity. """
+        global p2_fell_to_death
         if self.change_y == 0:
             self.change_y = 1
         else:
@@ -747,8 +749,8 @@ class Player2(pygame.sprite.Sprite):
 
         # See if we are on the ground.
         if self.rect.y >= constants.SCREEN_HEIGHT - self.rect.height and self.change_y >= 0:
-            self.change_y = 0
-            self.rect.y = constants.SCREEN_HEIGHT - self.rect.height
+            self.kill()
+            p2_fell_to_death = True
 
     def jump(self):
         """ Called when user hits 'jump' button. """
@@ -757,10 +759,15 @@ class Player2(pygame.sprite.Sprite):
         # 1 when working with a platform moving down.
         self.rect.y += 2
         platform_hit_list = pygame.sprite.spritecollide(self, self.level.platform_list, False)
+        box_hit_list = pygame.sprite.spritecollide(self, self.level.query_box_list, False)
+        weapon_hit_list = pygame.sprite.spritecollide(self, objects.active_weapon_list, False)
         self.rect.y -= 2
         # If it is ok to jump, set our speed upwards
-        if len(platform_hit_list) > 0 or self.rect.bottom >= constants.SCREEN_HEIGHT:
-            self.change_y = -12
+        if len(platform_hit_list) > 0 or len(box_hit_list) > 0 or len(weapon_hit_list) > 0:
+            if not grab_p1:
+                self.change_y = -12
+            else:
+                self.change_y = -5
 
     def go_left(self):
         """ Called when the user hits the left arrow. """
