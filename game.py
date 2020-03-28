@@ -11,9 +11,10 @@ import buttons
 
 verbose = False
 MUSIC = True
-INTRO = True
+INTRO = False
 FPS = False
 STATS = False
+GRID = False
 
 FRAMES = 1
 CPU = psutil.cpu_percent()
@@ -212,6 +213,7 @@ def PAUSE_GAME():
         screen.blit(P2_img, [590, 250])
         score = font2.render("Score: " + str(P2_Score), True, constants.WHITE)
         screen.blit(score, [570, 300])
+        screen.blit(font2.render("More levels coming soon", True, constants.WHITE), [295, 350])
 
         if music_paused:
             text = font2.render(playlist[playlist_que], True, constants.LIGHT_GRAY)
@@ -271,7 +273,7 @@ def live_music():
 def display_page():
     global Display_playlist, Display_Info, Display_Credits, FPS, STATS, CheckBox1, CheckBox2
 
-    context = font2.render("Comming in v1.2", True, constants.WHITE)
+    context = font2.render("Coming in v1.2", True, constants.WHITE)
     checked = pygame.image.load("BUTTONS/checked_box-01.png").convert_alpha()
     unchecked = pygame.image.load("BUTTONS/unchecked_box-01.png").convert_alpha()
     X_btn_img = pygame.image.load("BUTTONS/X_Btn-01.png").convert_alpha()
@@ -394,14 +396,44 @@ def display_credits():
             screen.blit(c1b, [270, 295])
             screen.blit(c1c, [270, 325])
             screen.blit(c1d, [270, 355])
-            screen.blit(c2a, [430, 265])
-            screen.blit(c2b, [430, 295])
-            screen.blit(c2c, [430, 325])
-            screen.blit(c2d, [430, 355])
+            screen.blit(c2a, [450, 265])
+            screen.blit(c2b, [450, 295])
+            screen.blit(c2c, [450, 325])
+            screen.blit(c2d, [450, 355])
 
         clock.tick(15)
         pygame.display.flip()
     pass
+
+
+def display_grid():
+    pygame.draw.rect(screen, (250, 250, 250), (50, 0, 1, 600))
+    pygame.draw.rect(screen, (150, 150, 150), (100, 0, 1, 600))
+    pygame.draw.rect(screen, (250, 250, 250), (150, 0, 1, 600))
+    pygame.draw.rect(screen, (150, 150, 150), (200, 0, 1, 600))
+    pygame.draw.rect(screen, (250, 250, 250), (250, 0, 1, 600))
+    pygame.draw.rect(screen, (150, 150, 150), (300, 0, 1, 600))
+    pygame.draw.rect(screen, (250, 250, 250), (350, 0, 1, 600))
+    pygame.draw.rect(screen, (150, 150, 150), (400, 0, 1, 600))
+    pygame.draw.rect(screen, (250, 250, 250), (450, 0, 1, 600))
+    pygame.draw.rect(screen, (150, 150, 150), (500, 0, 1, 600))
+    pygame.draw.rect(screen, (250, 250, 250), (550, 0, 1, 600))
+    pygame.draw.rect(screen, (150, 150, 150), (600, 0, 1, 600))
+    pygame.draw.rect(screen, (250, 250, 250), (650, 0, 1, 600))
+    pygame.draw.rect(screen, (150, 150, 150), (700, 0, 1, 600))
+    pygame.draw.rect(screen, (250, 250, 250), (750, 0, 1, 600))
+
+    pygame.draw.rect(screen, (150, 150, 150), (0, 50, 800, 1))
+    pygame.draw.rect(screen, (250, 250, 250), (0, 100, 800, 1))
+    pygame.draw.rect(screen, (150, 150, 150), (0, 150, 800, 1))
+    pygame.draw.rect(screen, (250, 250, 250), (0, 200, 800, 1))
+    pygame.draw.rect(screen, (150, 150, 150), (0, 250, 800, 1))
+    pygame.draw.rect(screen, (250, 250, 250), (0, 300, 800, 1))
+    pygame.draw.rect(screen, (150, 150, 150), (0, 350, 800, 1))
+    pygame.draw.rect(screen, (250, 250, 250), (0, 400, 800, 1))
+    pygame.draw.rect(screen, (150, 150, 150), (0, 450, 800, 1))
+    pygame.draw.rect(screen, (250, 250, 250), (0, 500, 800, 1))
+    pygame.draw.rect(screen, (150, 150, 150), (0, 550, 800, 1))
 
 
 def P1_SPAWN_WEAPON():
@@ -713,42 +745,42 @@ def grab_player_manager():
 
 def activate_turrets():
     global t1_alt, t2_alt, t3_alt, t4_alt, t5_alt, t6_alt
-    if len(t1_bullets) < 3 and levels.active_turret_list.__contains__(int(0)):
+    if len(t1_bullets) < 3 and levels.active_turret_list.__contains__(int(60)):
         t1_bullets.append(objects.turret_projectile(round(levels.T1_XY[0] + 15),
                                                     round(levels.T1_XY[1] + 8),
                                                     5,
                                                     constants.BULLET_RED,
                                                     t1_alt))
         t1_alt = t1_alt * -1
-    if len(t2_bullets) < 3 and levels.active_turret_list.__contains__(int(0)):
+    if len(t2_bullets) < 3 and levels.active_turret_list.__contains__(int(160)):
         t2_bullets.append(objects.turret_projectile(round(levels.T2_XY[0] + 15),
                                                     round(levels.T2_XY[1] + 8),
                                                     5,
                                                     constants.BULLET_RED,
                                                     t2_alt))
         t2_alt = t2_alt * -1
-    if len(t3_bullets) < 3 and levels.active_turret_list.__contains__(int(235)):
+    if len(t3_bullets) < 3 and levels.active_turret_list.__contains__(int(230)):
         t3_bullets.append(objects.turret_projectile(round(levels.T3_XY[0] + 15),
                                                     round(levels.T3_XY[1] + 8),
                                                     5,
                                                     constants.BULLET_RED,
                                                     t3_alt))
         t3_alt = t3_alt * -1
-    if len(t4_bullets) < 3 and levels.active_turret_list.__contains__(int(0)):
+    if len(t4_bullets) < 3 and levels.active_turret_list.__contains__(int(360)):
         t4_bullets.append(objects.turret_projectile(round(levels.T4_XY[0] + 15),
                                                     round(levels.T4_XY[1] + 8),
                                                     5,
                                                     constants.BULLET_RED,
                                                     t4_alt))
         t4_alt = t4_alt * -1
-    if len(t5_bullets) < 3 and levels.active_turret_list.__contains__(int(0)):
+    if len(t5_bullets) < 3 and levels.active_turret_list.__contains__(int(440)):
         t5_bullets.append(objects.turret_projectile(round(levels.T5_XY[0] + 15),
                                                     round(levels.T5_XY[1] + 8),
                                                     5,
                                                     constants.BULLET_RED,
                                                     t5_alt))
         t5_alt = t5_alt * -1
-    if len(t6_bullets) < 3 and levels.active_turret_list.__contains__(int(0)):
+    if len(t6_bullets) < 3 and levels.active_turret_list.__contains__(int(510)):
         t6_bullets.append(objects.turret_projectile(round(levels.T6_XY[0] + 15),
                                                     round(levels.T6_XY[1] + 8),
                                                     5,
@@ -1093,8 +1125,8 @@ def new_level():
     P2_img = pygame.image.load("SPRITES/PM/FORWARD.png").convert_alpha()
 
     # Create all the levels
-    level_list = [levels.Level_01(), levels.Level_02(), levels.Level_03(),
-                  levels.Level_04(), levels.Level_05(), levels.Level_06()
+    level_list = [levels.Level_01(player1, player2),# levels.Level_02(), levels.Level_03(),
+                  #levels.Level_04(), levels.Level_05(), levels.Level_06()
                   ]
 
     # Set the current level
@@ -1359,7 +1391,6 @@ def START_GAME():
                             grab_p1 = False
                             player.grab_p1 = False
                             player.sprite_collided = False
-
         # Update the players.
         active_sprite_list.update()
         active_weapon_list.update()
@@ -1375,21 +1406,17 @@ def START_GAME():
             player1.rect.left = 0
         if player2.rect.left < 0:
             player2.rect.left = 0
-
         grab_player_manager()
         turret_cooldown_repeater()
         win_checker()
-
         # ------- ALL CODE TO DRAW SHOULD GO BELOW THIS COMMENT -------
         current_level.draw(screen)
         active_sprite_list.draw(screen)
         active_weapon_list.draw(screen)
-
         # --------- bullet manager ---------
         player_bullet_manager()
         turret_bullet_manager()
         # -----------------------------------
-
         if level_starting_frame > 0:  # Also transparency value
             screen_layer = pygame.Surface((800, 600), pygame.SRCALPHA)  # per-pixel alpha
             screen_layer.fill((0, 0, 0, level_starting_frame))  # notice the alpha value in the color
@@ -1488,12 +1515,10 @@ def START_GAME():
 
                 clock.tick(20)
                 pygame.display.flip()
-
         if player.P1_WEAPON_X is not None:
             P1_SPAWN_WEAPON()
         if player.P2_WEAPON_X is not None:
             P2_SPAWN_WEAPON()
-
         if P1_SLASH > 0:
             if -35 < player1.rect.x - player2.rect.x < 40 and -35 < player1.rect.y - player2.rect.y < 55:
                 player.player_1_win = True
@@ -1528,14 +1553,16 @@ def START_GAME():
             if P2_SLASH == 20:
                 P2_SLASH = 0
                 p2_slash_group.empty()
-
-        # ------- ALL CODE TO DRAW SHOULD GO ABOVE THIS COMMENT --------
-
-        live_music()
         if FPS:
             display_fps()
         if STATS:
             display_stats()
+        if GRID:
+            display_grid()
+        # ------- ALL CODE TO DRAW SHOULD GO ABOVE THIS COMMENT --------
+
+        live_music()
+
 
         # Limit to 60 frames per second
         clock.tick(0)

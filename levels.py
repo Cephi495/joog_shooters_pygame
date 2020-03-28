@@ -17,12 +17,12 @@ WHITE LONG      0       135     600     45
 BLUE LONG       0       135     600     45
 
 """
-T1_XY = [388, 85]
-T2_XY = [388, 160]
-T3_XY = [388, 235]
-T4_XY = [388, 310]
-T5_XY = [388, 385]
-T6_XY = [388, 460]
+T1_XY = [385, 60]
+T2_XY = [385, 160]
+T3_XY = [385, 230]
+T4_XY = [385, 360]
+T5_XY = [385, 440]
+T6_XY = [385, 510]
 active_turret_list = []
 
 
@@ -31,7 +31,7 @@ class Level(object):
         Create a child class for each level with level-specific
         info. """
 
-    def __init__(self):
+    def __init__(self, player1, player2):
         """ Constructor. Pass in a handle to player. Needed for when moving platforms
             collide with the player. """
 
@@ -45,6 +45,8 @@ class Level(object):
         self.platform_list = pygame.sprite.Group()
         self.query_box_list = pygame.sprite.Group()
         self.turret_list = pygame.sprite.Group()
+        self.player1 = player1
+        self.player2 = player2
 
     # Update everything on this level
     def update(self):
@@ -82,53 +84,63 @@ class Level(object):
 class Level_01(Level):
     """ Definition for level 1. """
 
-    def __init__(self):
+    def __init__(self, player1, player2):
         """ Create level 1. """
 
         # Call the parent constructor
-        Level.__init__(self)
+        Level.__init__(self, player1, player2)
 
         self.background = pygame.image.load("BACKDROPS/Pixelated_BG1.png").convert()
-        self.background.set_colorkey(constants.WHITE)
+        self.background.set_colorkey(constants.BLACK)
 
         self.platform_list.empty()
         self.query_box_list.empty()
         self.turret_list.empty()
 
-        # TODO Update platform data
         # Array with type of platform, and x, y location of the platform.
-        level = [[platforms.BLUE_SHORT, 50, 66],
-                 [platforms.GREEN_SHORT, 550, 66],
-                 [platforms.WHITE_MEDIUM, 200, 133],
-                 [platforms.RED_SHORT, 550, 266],
-                 [platforms.GOLD_SHORT, 50, 266],
-                 [platforms.WHITE_medium, 100, 200],
-                 [platforms.WHITE_LONG, 100, 333],
-                 [platforms.WHITE_SHORT, 50, 400],
-                 [platforms.WHITE_SHORT, 550, 400],
-                 [platforms.BLUE_medium, 200, 466],
-                 [platforms.WHITE_SHORT, 50, 533],
-                 [platforms.WHITE_SHORT, 550, 533],
+        level = [[platforms.RED_SHORT, 50, 50],
+                 [platforms.RED_SHORT, 650, 50],
+                 [platforms.BLUE_LONG, 108, 190],
+                 [platforms.RED_SHORT, 100, 330],
+                 [platforms.RED_SHORT, 600, 330],
+                 [platforms.BLUE_medium, 100, 400],
+                 [platforms.BLUE_medium, 480, 400],
+                 [platforms.RED_SHORT, 350, 470],
+                 [platforms.BLUE_LONG, 108, 540],
                  ]
 
-        m_level = [[platforms.GREEN_SHORT, 500, 400, 350, 550, 1],
+        m_level = [[platforms.WHITE_medium, 100, 120, 30, 150, 1],
+                   [platforms.WHITE_medium, 480, 120, 430, 550, -1],
+                   [platforms.WHITE_medium, 50, 260, 30, 110, -1],
+                   [platforms.WHITE_medium, 530, 260, 470, 550, 1],
+                   [platforms.GOLD_SHORT, 50, 470, 30, 100, 1],
+                   [platforms.GOLD_SHORT, 650, 470, 600, 670, -1],
+                   [platforms.GOLD_SHORT, 350, 330, 250, 450, -1],
                    ]
 
-        boxes = [[platforms.QUERY_BOX, 300, 33],
-                 [platforms.QUERY_BOX, 480, 33],
-                 [platforms.QUERY_BOX, 10, 140],
-                 [platforms.QUERY_BOX, 770, 140],
+        boxes = [[platforms.QUERY_BOX, 390, 60],
+                 [platforms.QUERY_BOX, 80, 190],
+                 [platforms.QUERY_BOX, 700, 190],
+                 [platforms.QUERY_BOX, 220, 330],
+                 [platforms.QUERY_BOX, 560, 330],
+                 [platforms.QUERY_BOX, 70, 400],
+                 [platforms.QUERY_BOX, 710, 400],
+                 [platforms.QUERY_BOX, 390, 380],
                  ]
 
-        turrets = [[platforms.TURRET, 388, 235],
-                   ]
+        turrets = [  # [platforms.TURRET, 385, 60],
+                    # [platforms.TURRET, 385, 160],
+                    [platforms.TURRET, 385, 230],
+                    # [platforms.TURRET, 385, 360],
+                    # [platforms.TURRET, 385, 440],
+                    [platforms.TURRET, 385, 510],
+        ]
 
         # Go through the array above and add platforms
         for platform in level:
             block = platforms.Platform(platform[0])
             block.rect.x = platform[1]
             block.rect.y = platform[2]
-            # block.player = self.player
             self.platform_list.add(block)
 
         for moving_platform in m_level:
@@ -138,26 +150,26 @@ class Level_01(Level):
             block.boundary_left = moving_platform[3]
             block.boundary_right = moving_platform[4]
             block.change_x = moving_platform[5]
-            # block.player = self.player
+            block.player1 = self.player1
+            block.player2 = self.player2
             block.level = self
-            # self.platform_list.add(block)
+            self.platform_list.add(block)
 
         for query_box in boxes:
             block = platforms.Query_Box(query_box[0])
             block.rect.x = query_box[1]
             block.rect.y = query_box[2]
-            # block.player = self.player
             self.query_box_list.add(block)
 
         for turret in turrets:
             block = platforms.Turret()
             block.rect.x = turret[1]
             block.rect.y = turret[2]
-            # block.player = self.player
             self.turret_list.add(block)
             active_turret_list.append(block.rect.y)
 
 
+'''
 class Level_02(Level):
     """ Definition for level 1. """
 
@@ -396,3 +408,4 @@ class Level_06(Level):
         block.change_x = 1
         block.level = self
         self.platform_list.add(block)
+'''

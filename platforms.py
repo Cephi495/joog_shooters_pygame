@@ -14,12 +14,12 @@ RED_SHORT = (130, 10, 100, 26)
 GREEN_SHORT = (250, 10, 100, 26)
 GOLD_SHORT = (370, 10, 100, 26)
 WHITE_SHORT = (490, 10, 100, 26)
-WHITE_MEDIUM = (10, 55, 350, 26)
-BLUE_MEDIUM = (10, 100, 350, 26)
-WHITE_medium = (370, 55, 230, 26)
-BLUE_medium = (370, 100, 230, 26)
-WHITE_LONG = (10, 145, 594, 26)
-BLUE_LONG = (10, 190, 594, 26)
+WHITE_MEDIUM = (10, 55, 340, 26)
+BLUE_MEDIUM = (10, 100, 340, 26)
+WHITE_medium = (370, 55, 220, 26)
+BLUE_medium = (370, 100, 220, 26)
+WHITE_LONG = (10, 145, 584, 26)
+BLUE_LONG = (10, 190, 584, 26)
 
 QUERY_BOX = (0, 0, 20, 20)
 TURRET = (0, 0, 30, 30)
@@ -86,7 +86,8 @@ class MovingPlatform(Platform):
         self.boundary_right = 0
 
         self.level = None
-        self.player = None
+        self.player1 = None
+        self.player2 = None
 
     def update(self):
         """ Move the platform.
@@ -99,34 +100,60 @@ class MovingPlatform(Platform):
         # Move left/right
         self.rect.x += self.change_x
 
-        # See if we hit the player
-        hit = pygame.sprite.collide_rect(self, self.player)
-        if hit:
+        # See if we hit player1
+        hit_p1 = pygame.sprite.collide_rect(self, self.player1)
+        if hit_p1:
             # We did hit the player. Shove the player around and
             # assume he/she won't hit anything else.
 
             # If we are moving right, set our right side
             # to the left side of the item we hit
             if self.change_x < 0:
-                self.player.rect.right = self.rect.left
+                self.player1.rect.right = self.rect.left
             else:
                 # Otherwise if we are moving left, do the opposite.
-                self.player.rect.left = self.rect.right
+                self.player1.rect.left = self.rect.right
+
+        # See if we hit the player2
+        hit_p2 = pygame.sprite.collide_rect(self, self.player2)
+        if hit_p2:
+            # We did hit the player. Shove the player around and
+            # assume he/she won't hit anything else.
+
+            # If we are moving right, set our right side
+            # to the left side of the item we hit
+            if self.change_x < 0:
+                self.player2.rect.right = self.rect.left
+            else:
+                # Otherwise if we are moving left, do the opposite.
+                self.player2.rect.left = self.rect.right
 
         # Move up/down
         self.rect.y += self.change_y
 
         # Check and see if we the player
-        hit = pygame.sprite.collide_rect(self, self.player)
-        if hit:
+        hit_p1 = pygame.sprite.collide_rect(self, self.player1)
+        if hit_p1:
             # We did hit the player. Shove the player around and
             # assume he/she won't hit anything else.
 
             # Reset our position based on the top/bottom of the object.
             if self.change_y < 0:
-                self.player.rect.bottom = self.rect.top
+                self.player1.rect.bottom = self.rect.top
             else:
-                self.player.rect.top = self.rect.bottom
+                self.player1.rect.top = self.rect.bottom
+
+        # Check and see if we the player
+        hit_p2 = pygame.sprite.collide_rect(self, self.player2)
+        if hit_p2:
+            # We did hit the player. Shove the player around and
+            # assume he/she won't hit anything else.
+
+            # Reset our position based on the top/bottom of the object.
+            if self.change_y < 0:
+                self.player2.rect.bottom = self.rect.top
+            else:
+                self.player2.rect.top = self.rect.bottom
 
         # Check the boundaries and see if we need to reverse
         # direction.
