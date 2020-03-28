@@ -6,31 +6,76 @@ from spritesheet_function import SpriteSheet
 
 verbose = False
 
+P1_WEAPON_X = None
+P1_WEAPON_Y = None
+P2_WEAPON_X = None
+P2_WEAPON_Y = None
+
 sprite_collided = False
-WEAPON_X = None
-WEAPON_Y = None
-p1_touching_weapon, p2_touching_weapon = None, None
 grab_p2, grab_p1 = False, False
-p1_fell_to_death, p2_fell_to_death = False, False
+p1_in_air, p2_in_air = False, False
+p1_down_btn, p2_down_btn = False, False
+player_2_win, player_1_win = False, False
+p1_touching_weapon, p2_touching_weapon = None, None
+
 active_sprite_list = pygame.sprite.Group()
+
 sprite1_group = pygame.sprite.Group()
 sprite2_group = pygame.sprite.Group()
 
 
-def SPAWN_WEAPON(x, y):
-    global WEAPON_X
-    global WEAPON_Y
+def RESET_DATA():
+    global P1_WEAPON_X, P1_WEAPON_Y, P2_WEAPON_X, P2_WEAPON_Y
+    global sprite_collided
+    global grab_p1, grab_p2, p1_in_air, p2_in_air, p1_down_btn, p2_down_btn
+    global player_2_win, player_1_win, p1_touching_weapon, p2_touching_weapon
+    global active_sprite_list, sprite1_group, sprite2_group
+    P1_WEAPON_X = None
+    P1_WEAPON_Y = None
+    P2_WEAPON_X = None
+    P2_WEAPON_Y = None
 
-    WEAPON_X = x
-    WEAPON_Y = y
+    sprite_collided = False
+    grab_p2, grab_p1 = False, False
+    p1_in_air, p2_in_air = False, False
+    p1_down_btn, p2_down_btn = False, False
+    player_2_win, player_1_win = False, False
+    p1_touching_weapon, p2_touching_weapon = None, None
+    active_sprite_list.empty()
+    sprite1_group.empty()
+    sprite2_group.empty()
 
 
-def RESET_WEAPON_SPAWN():
-    global WEAPON_X
-    global WEAPON_Y
+def P1_SPAWN_WEAPON(x, y):
+    global P1_WEAPON_X
+    global P1_WEAPON_Y
 
-    WEAPON_X = None
-    WEAPON_Y = None
+    P1_WEAPON_X = x
+    P1_WEAPON_Y = y
+
+
+def P2_SPAWN_WEAPON(x, y):
+    global P2_WEAPON_X
+    global P2_WEAPON_Y
+
+    P2_WEAPON_X = x
+    P2_WEAPON_Y = y
+
+
+def P1_RESET_WEAPON_SPAWN():
+    global P1_WEAPON_X
+    global P1_WEAPON_Y
+
+    P1_WEAPON_X = None
+    P1_WEAPON_Y = None
+
+
+def P2_RESET_WEAPON_SPAWN():
+    global P2_WEAPON_X
+    global P2_WEAPON_Y
+
+    P2_WEAPON_X = None
+    P2_WEAPON_Y = None
 
 
 class Player1(pygame.sprite.Sprite):
@@ -43,9 +88,6 @@ class Player1(pygame.sprite.Sprite):
 
         # Call the parent's constructor
         super().__init__()
-        active_sprite_list.add(self)
-        sprite1_group.add(self)
-
         # -- Attributes
         self.width = 18
         self.height = 32
@@ -82,9 +124,12 @@ class Player1(pygame.sprite.Sprite):
         self.has_gun = False
         self.has_sword = False
         self.WEAPON = None
+        self.ammo = 10
+        self.swing = 10
 
         # List of sprites we can bump against
         self.level = None
+
         sprite_sheet = SpriteSheet("SPRITES/Sprite1_sheet.png")
 
         # Load all the right facing walking images into a list
@@ -192,7 +237,7 @@ class Player1(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
 
     def update(self):
-        global p1_touching_weapon, p1_weapon_x, p1_weapon_y, sprite_collided, grab_p2
+        global p1_touching_weapon, p1_weapon_x, p1_weapon_y, sprite_collided, grab_p2, p1_in_air
 
         """ Move the player1. """
         # Gravity
@@ -256,13 +301,20 @@ class Player1(pygame.sprite.Sprite):
             elif self.change_x < 0:
                 # Otherwise if we are moving left, do the opposite.
                 self.rect.left = block.rect.right
-        # For query boxes
+        # For active query boxes
         box_hit_list = pygame.sprite.spritecollide(self, self.level.query_box_list, False)
         for box in box_hit_list:
             if self.change_x > 0:
                 self.rect.right = box.rect.left
             elif self.change_x < 0:
                 self.rect.left = box.rect.right
+        # For active turrets
+        box_hit_list = pygame.sprite.spritecollide(self, self.level.turret_list, False)
+        for turret in box_hit_list:
+            if self.change_x > 0:
+                self.rect.right = turret.rect.left
+            elif self.change_x < 0:
+                self.rect.left = turret.rect.right
         # For active weapons
         weapon_hit_list = pygame.sprite.spritecollide(self, objects.active_weapon_list, False)
         for weapon in weapon_hit_list:
@@ -299,18 +351,34 @@ class Player1(pygame.sprite.Sprite):
                 self.rect.top = block.rect.bottom
             # Stop our vertical movement
             self.change_y = 0
+            p1_in_air = False
             if isinstance(block, MovingPlatform):
                 self.rect.x += block.change_x
-        # For query boxes
+        # For active query boxes
         box_hit_list = pygame.sprite.spritecollide(self, self.level.query_box_list, False)
         for box in box_hit_list:
             if self.change_y > 0:
                 self.rect.bottom = box.rect.top
+                self.change_y = 0
+                if p1_down_btn:
+                    P1_SPAWN_WEAPON(box.rect.x, box.rect.y + 16)
+                    box.kill()
             elif self.change_y < 0:
-                SPAWN_WEAPON(box.rect.x, box.rect.y - 6)
+                P1_SPAWN_WEAPON(box.rect.x, box.rect.y - 6)
                 box.kill()
+                self.change_y = 0
+            p1_in_air = False
+        # For active turrets
+        block_hit_list = pygame.sprite.spritecollide(self, self.level.turret_list, False)
+        for turret in block_hit_list:
+            # Reset our position based on the top/bottom of the object.
+            if self.change_y > 0:
+                self.rect.bottom = turret.rect.top
+            elif self.change_y < 0:
+                self.rect.top = turret.rect.bottom
             self.change_y = 0
-        # For weapons
+            p1_in_air = False
+        # For active weapons
         weapon_hit_list = pygame.sprite.spritecollide(self, objects.active_weapon_list, False)
         for weapon in weapon_hit_list:
             if not self.has_gun and not self.has_sword:
@@ -326,6 +394,7 @@ class Player1(pygame.sprite.Sprite):
                 self.change_y = 0
             elif self.change_y < 0:
                 weapon.rect.bottom = self.rect.top
+            p1_in_air = False
 
         if p1_touching_weapon is not None:
             if 40 < abs(abs(self.rect.x + self.width//2) - abs(p1_weapon_x + 8)):
@@ -347,19 +416,20 @@ class Player1(pygame.sprite.Sprite):
 
     def calc_grav(self):
         """ Calculate effect of gravity. """
-        global p1_fell_to_death
+        global player_2_win
         if self.change_y == 0:
             self.change_y = 1
         else:
             self.change_y += .95
 
         # See if we are on the ground.
-        if self.rect.y >= constants.SCREEN_HEIGHT - self.rect.height and self.change_y >= 0:
+        if self.rect.y >= constants.SCREEN_HEIGHT and self.change_y >= 0:
             self.kill()
-            p1_fell_to_death = True
+            player_2_win = True
 
     def jump(self):
         """ Called when user hits 'jump' button. """
+        global p1_in_air
         # move down a bit and see if there is a platform below us.
         # Move down 2 pixels because it doesn't work well if we only move down
         # 1 when working with a platform moving down.
@@ -374,6 +444,7 @@ class Player1(pygame.sprite.Sprite):
                 self.change_y = -12
             else:
                 self.change_y = -5
+            p1_in_air = True
 
     def go_left(self):
         """ Called when the user hits the left arrow. """
@@ -393,6 +464,8 @@ class Player1(pygame.sprite.Sprite):
         self.idling = True
 
     def start(self):
+        active_sprite_list.add(self)
+        sprite1_group.add(self)
         self.direction = "F"
         if verbose:
             print("<player.py> " + "Player1 ready")
@@ -434,9 +507,6 @@ class Player2(pygame.sprite.Sprite):
 
         # Call the parent's constructor
         super().__init__()
-        active_sprite_list.add(self)
-        sprite2_group.add(self)
-
         # -- Attributes
         self.width = 18
         self.height = 32
@@ -473,6 +543,8 @@ class Player2(pygame.sprite.Sprite):
         self.has_gun = False
         self.has_sword = False
         self.WEAPON = None
+        self.ammo = 10
+        self.swing = 10
 
         # List of sprites we can bump against
         self.level = None
@@ -583,7 +655,7 @@ class Player2(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
 
     def update(self):
-        global p2_touching_weapon, p2_weapon_x, p2_weapon_y, sprite_collided, grab_p1
+        global p2_touching_weapon, p2_weapon_x, p2_weapon_y, sprite_collided, grab_p1, p2_in_air
 
         """ Move the player2. """
         # Gravity
@@ -653,6 +725,13 @@ class Player2(pygame.sprite.Sprite):
                 self.rect.right = box.rect.left
             elif self.change_x < 0:
                 self.rect.left = box.rect.right
+        # For active turrets
+        box_hit_list = pygame.sprite.spritecollide(self, self.level.turret_list, False)
+        for turret in box_hit_list:
+            if self.change_x > 0:
+                self.rect.right = turret.rect.left
+            elif self.change_x < 0:
+                self.rect.left = turret.rect.right
         # For active weapons
         weapon_hit_list = pygame.sprite.spritecollide(self, objects.active_weapon_list, False)
         for weapon in weapon_hit_list:
@@ -695,16 +774,32 @@ class Player2(pygame.sprite.Sprite):
             self.change_y = 0
             if isinstance(block, MovingPlatform):
                 self.rect.x += block.change_x
-        # For query boxes
+            p2_in_air = False
+        # For active query boxes
         box_hit_list = pygame.sprite.spritecollide(self, self.level.query_box_list, False)
         for box in box_hit_list:
             if self.change_y > 0:
                 self.rect.bottom = box.rect.top
+                self.change_y = 0
+                if p2_down_btn:
+                    P2_SPAWN_WEAPON(box.rect.x, box.rect.y + 16)
+                    box.kill()
             elif self.change_y < 0:
-                SPAWN_WEAPON(box.rect.x, box.rect.y - 6)
+                P2_SPAWN_WEAPON(box.rect.x, box.rect.y - 6)
                 box.kill()
+                self.change_y = 0
+            p2_in_air = False
+        # For active turrets
+        block_hit_list = pygame.sprite.spritecollide(self, self.level.turret_list, False)
+        for turret in block_hit_list:
+            # Reset our position based on the top/bottom of the object.
+            if self.change_y > 0:
+                self.rect.bottom = turret.rect.top
+            elif self.change_y < 0:
+                self.rect.top = turret.rect.bottom
             self.change_y = 0
-        # For weapons
+            p2_in_air = False
+        # For active weapons
         weapon_hit_list = pygame.sprite.spritecollide(self, objects.active_weapon_list, False)
         for weapon in weapon_hit_list:
             if not self.has_gun and not self.has_sword:
@@ -720,6 +815,7 @@ class Player2(pygame.sprite.Sprite):
                 self.change_y = 0
             elif self.change_y < 0:
                 weapon.rect.bottom = self.rect.top
+            p2_in_air = False
 
         if p2_touching_weapon is not None:
             if 40 < abs(abs(self.rect.x + self.width // 2) - abs(p2_weapon_x + 8)):
@@ -741,19 +837,20 @@ class Player2(pygame.sprite.Sprite):
 
     def calc_grav(self):
         """ Calculate effect of gravity. """
-        global p2_fell_to_death
+        global player_1_win
         if self.change_y == 0:
             self.change_y = 1
         else:
             self.change_y += .95
 
         # See if we are on the ground.
-        if self.rect.y >= constants.SCREEN_HEIGHT - self.rect.height and self.change_y >= 0:
+        if self.rect.y >= constants.SCREEN_HEIGHT and self.change_y >= 0:
             self.kill()
-            p2_fell_to_death = True
+            player_1_win = True
 
     def jump(self):
         """ Called when user hits 'jump' button. """
+        global p2_in_air
         # move down a bit and see if there is a platform below us.
         # Move down 2 pixels because it doesn't work well if we only move down
         # 1 when working with a platform moving down.
@@ -768,6 +865,7 @@ class Player2(pygame.sprite.Sprite):
                 self.change_y = -12
             else:
                 self.change_y = -5
+            p2_in_air = True
 
     def go_left(self):
         """ Called when the user hits the left arrow. """
@@ -789,8 +887,9 @@ class Player2(pygame.sprite.Sprite):
         self.idling = True
 
     def start(self):
+        active_sprite_list.add(self)
+        sprite2_group.add(self)
         self.direction = "F"
-
         if verbose:
             print("<player.py> " + "Player2 ready")
 

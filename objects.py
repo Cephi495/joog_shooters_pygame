@@ -2,8 +2,14 @@ import pygame
 import constants
 import player
 from platforms import MovingPlatform
+from spritesheet_function import SpriteSheet
 
 active_weapon_list = pygame.sprite.Group()
+global p1_slash_frame, p2_slash_frame
+
+
+def RESET_DATA():
+    active_weapon_list.empty()
 
 
 class projectile(object):
@@ -26,23 +32,20 @@ class turret_projectile(object):
         self.radius = radius
         self.color = color
         self.direction = direction
-        self.vel = 4 * direction
+        self.vel = 7 * direction
 
     def draw(self, screen):
         pygame.draw.circle(screen, self.color, (self.x, self.y), self.radius)
 
 
 class P1GUN(pygame.sprite.Sprite):
+
     def __init__(self):
-        """ Platform constructor. Assumes constructed with user passing in
-                    an array of 5 numbers like what's defined at the top of this
-                    code. """
         super().__init__()
         active_weapon_list.add(self)
 
         self.width = 16
         self.height = 11
-        # Set speed vector of weapon
         self.change_x = 0
         self.change_y = 0
         self.level = None
@@ -158,21 +161,17 @@ class P1GUN(pygame.sprite.Sprite):
 
 class P2GUN(pygame.sprite.Sprite):
     def __init__(self):
-        """ Platform constructor. Assumes constructed with user passing in
-                    an array of 5 numbers like what's defined at the top of this
-                    code. """
         super().__init__()
         active_weapon_list.add(self)
 
-        self.width = 16
-        self.height = 11
+        self.width = 18
+        self.height = 10
         # Set speed vector of weapon
         self.change_x = 0
         self.change_y = 0
         self.level = None
-        self.level = None
 
-        self.image = pygame.image.load("SPRITES/GunIcon1.png").convert_alpha()
+        self.image = pygame.image.load("SPRITES/GunIcon2.png").convert_alpha()
         # Set a reference to the image rect.
         self.rect = self.image.get_rect()
 
@@ -184,7 +183,7 @@ class P2GUN(pygame.sprite.Sprite):
         # Move left/right
         self.rect.x += self.change_x
 
-        self.image = pygame.image.load("SPRITES/GunIcon1.png").convert_alpha()
+        self.image = pygame.image.load("SPRITES/GunIcon2.png").convert_alpha()
 
         # See if we hit anything
         # For platforms
@@ -283,9 +282,6 @@ class P2GUN(pygame.sprite.Sprite):
 
 class P1SWORD(pygame.sprite.Sprite):
     def __init__(self):
-        """ Platform constructor. Assumes constructed with user passing in
-                    an array of 5 numbers like what's defined at the top of this
-                    code. """
         super().__init__()
         active_weapon_list.add(self)
 
@@ -294,7 +290,6 @@ class P1SWORD(pygame.sprite.Sprite):
         # Set speed vector of weapon
         self.change_x = 0
         self.change_y = 0
-        self.level = None
         self.level = None
 
         self.image = pygame.image.load("SPRITES/SwordIcon1.png").convert_alpha()
@@ -408,9 +403,6 @@ class P1SWORD(pygame.sprite.Sprite):
 
 class P2SWORD(pygame.sprite.Sprite):
     def __init__(self):
-        """ Platform constructor. Assumes constructed with user passing in
-                    an array of 5 numbers like what's defined at the top of this
-                    code. """
         super().__init__()
         active_weapon_list.add(self)
 
@@ -419,7 +411,6 @@ class P2SWORD(pygame.sprite.Sprite):
         # Set speed vector of weapon
         self.change_x = 0
         self.change_y = 0
-        self.level = None
         self.level = None
 
         self.image = pygame.image.load("SPRITES/SwordIcon2.png").convert_alpha()
@@ -529,3 +520,129 @@ class P2SWORD(pygame.sprite.Sprite):
     def toss_right(self):
         self.change_y = - 3
         self.change_x = 7
+
+
+class P1SLASH(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        self.width = 43
+        self.height = 43
+        self.direction = "R"
+        self.slash_frame_r = []
+        self.slash_frame_l = []
+        self.slash_none = []
+        sprite_sheet = SpriteSheet("SPRITES/p1_weapon_slash.png")
+
+        # Load all the right facing walking images into a list
+        image = sprite_sheet.get_image(107, 218, 43, 43)
+        self.slash_frame_r.append(image)
+        image = sprite_sheet.get_image(107, 173, 43, 43)
+        self.slash_frame_r.append(image)
+        image = sprite_sheet.get_image(107, 130, 43, 43)
+        self.slash_frame_r.append(image)
+        image = sprite_sheet.get_image(107, 86, 43, 43)
+        self.slash_frame_r.append(image)
+        image = sprite_sheet.get_image(107, 44, 43, 43)
+        self.slash_frame_r.append(image)
+        image = sprite_sheet.get_image(107, 0, 43, 43)
+        self.slash_frame_r.append(image)
+
+        # Load all the left facing walking images, then flip them
+        # to face left.
+        image = sprite_sheet.get_image(107, 218, 43, 43)
+        image = pygame.transform.flip(image, True, False)
+        self.slash_frame_l.append(image)
+        image = sprite_sheet.get_image(107, 173, 43, 43)
+        image = pygame.transform.flip(image, True, False)
+        self.slash_frame_l.append(image)
+        image = sprite_sheet.get_image(107, 130, 43, 43)
+        image = pygame.transform.flip(image, True, False)
+        self.slash_frame_l.append(image)
+        image = sprite_sheet.get_image(107, 86, 43, 43)
+        image = pygame.transform.flip(image, True, False)
+        self.slash_frame_l.append(image)
+        image = sprite_sheet.get_image(107, 44, 43, 43)
+        image = pygame.transform.flip(image, True, False)
+        self.slash_frame_l.append(image)
+        image = sprite_sheet.get_image(107, 0, 43, 43)
+        image = pygame.transform.flip(image, True, False)
+        self.slash_frame_l.append(image)
+
+        # Set a reference to the image rect.
+        image = sprite_sheet.get_image(0, 0, 1, 1)
+        self.slash_none.append(image)
+        self.image = self.slash_none[0]
+        self.rect = self.image.get_rect()
+
+    def update(self):
+        if p1_slash_frame < 6:
+            if self.direction == "R":
+                self.image = self.slash_frame_r[p1_slash_frame]
+
+            if self.direction == "L":
+                self.image = self.slash_frame_l[p1_slash_frame]
+        else:
+            self.kill()
+
+
+class P2SLASH(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        self.width = 43
+        self.height = 43
+        self.direction = "R"
+        self.slash_frame_r = []
+        self.slash_frame_l = []
+        self.slash_none = []
+        sprite_sheet = SpriteSheet("SPRITES/p2_weapon_slash.png")
+
+        # Load all the right facing walking images into a list
+        image = sprite_sheet.get_image(107, 218, 43, 43)
+        self.slash_frame_r.append(image)
+        image = sprite_sheet.get_image(107, 173, 43, 43)
+        self.slash_frame_r.append(image)
+        image = sprite_sheet.get_image(107, 130, 43, 43)
+        self.slash_frame_r.append(image)
+        image = sprite_sheet.get_image(107, 86, 43, 43)
+        self.slash_frame_r.append(image)
+        image = sprite_sheet.get_image(107, 44, 43, 43)
+        self.slash_frame_r.append(image)
+        image = sprite_sheet.get_image(107, 0, 43, 43)
+        self.slash_frame_r.append(image)
+
+        # Load all the left facing walking images, then flip them
+        # to face left.
+        image = sprite_sheet.get_image(107, 218, 43, 43)
+        image = pygame.transform.flip(image, True, False)
+        self.slash_frame_l.append(image)
+        image = sprite_sheet.get_image(107, 173, 43, 43)
+        image = pygame.transform.flip(image, True, False)
+        self.slash_frame_l.append(image)
+        image = sprite_sheet.get_image(107, 130, 43, 43)
+        image = pygame.transform.flip(image, True, False)
+        self.slash_frame_l.append(image)
+        image = sprite_sheet.get_image(107, 86, 43, 43)
+        image = pygame.transform.flip(image, True, False)
+        self.slash_frame_l.append(image)
+        image = sprite_sheet.get_image(107, 44, 43, 43)
+        image = pygame.transform.flip(image, True, False)
+        self.slash_frame_l.append(image)
+        image = sprite_sheet.get_image(107, 0, 43, 43)
+        image = pygame.transform.flip(image, True, False)
+        self.slash_frame_l.append(image)
+
+        # Set a reference to the image rect.
+        image = sprite_sheet.get_image(0, 0, 1, 1)
+        self.slash_none.append(image)
+        self.image = self.slash_none[0]
+        self.rect = self.image.get_rect()
+
+    def update(self):
+        if p2_slash_frame < 6:
+            if self.direction == "R":
+                self.image = self.slash_frame_r[p2_slash_frame]
+
+            if self.direction == "L":
+                self.image = self.slash_frame_l[p2_slash_frame]
+        else:
+            self.kill()

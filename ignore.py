@@ -258,8 +258,8 @@ class Level(object):
         """ Draw everything on this level. """
 
         # Draw all the sprite lists that we have
+        screen.fill(BLACK)
         self.platform_list.draw(screen)
-        self.enemy_list.draw(screen)
 
 
 # Create platforms for the level
