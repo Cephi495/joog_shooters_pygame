@@ -11,14 +11,13 @@ import buttons
 
 verbose = False
 MUSIC = True
-INTRO = False
+INTRO = True
 FPS = False
 STATS = False
 GRID = False
 
 FRAMES = 1
 CPU = psutil.cpu_percent()
-
 
 # BUG Jump free
 # TODO Level optimization
@@ -39,11 +38,12 @@ def INSTRUCTION_PAGE():
     # Load Intro Page
     display_instructions = True
     instruction_page = 1
-
     Title_BG = pygame.image.load("BACKDROPS/joog_shooters_title.png").convert()
     Instructions_BG = pygame.image.load("BACKDROPS/joog_shooters_instructions.png").convert()
     Instructions2_BG = pygame.image.load("BACKDROPS/joog_shooters_instructions2.png").convert()
-
+    # Play Music
+    pygame.mixer.music.load('AUDIO/MUSIC/Rahu - David Starfire.wav')
+    pygame.mixer.music.play(-1)
     # -------- Instruction Page Loop -----------
     while not done and display_instructions:
         for event in pygame.event.get():
@@ -632,7 +632,7 @@ def P2_THROW_WEAPON():
 
 def p1_score():
     global P1_Score, P1_win
-
+    player2.kill()
     P1_Score += 1
     player1.rect.x = 325
     player1.rect.y = 600
@@ -644,7 +644,7 @@ def p1_score():
 
 def p2_score():
     global P2_Score, P2_win
-
+    player1.kill()
     P2_Score += 1
     player2.rect.x = 325
     player2.rect.y = 600
@@ -1046,7 +1046,7 @@ def turret_bullet_manager():
 
 def turret_cooldown_repeater():
     global turret_cooldown
-    if turret_cooldown == 60:
+    if turret_cooldown == 90:
         activate_turrets()
         turret_cooldown = 0
     turret_cooldown += 1
@@ -1121,8 +1121,6 @@ def new_level():
     # Create the players
     player1 = player.Player1()
     player2 = player.Player2()
-    P1_img = pygame.image.load("SPRITES/GM/FORWARD.png").convert_alpha()
-    P2_img = pygame.image.load("SPRITES/PM/FORWARD.png").convert_alpha()
 
     # Create all the levels
     level_list = [levels.Level_01(player1, player2),# levels.Level_02(), levels.Level_03(),
@@ -1213,39 +1211,29 @@ def START_GAME():
     screen = pygame.display.set_mode(size)
     # Window title
     pygame.display.set_caption("Joog Shooters")
-    # Play Music
-    pygame.mixer.music.load('AUDIO/MUSIC/Rahu - David Starfire.wav')
-    pygame.mixer.music.play(-1)
     # Loop until the user clicks the close button.
     done = False
     Paused = False
-
     # Text font
     font1 = pygame.font.Font(None, 18)
     font2 = pygame.font.Font(None, 26)
-
     # Run instruction Page sequence
     if INTRO:
         INSTRUCTION_PAGE()
     pygame.mixer.music.stop()
-
-    # Start playlist music
-    PLAYLIST()
-
+    if MUSIC:
+        # Start playlist music
+        PLAYLIST()
     # -------- Main Program Loop -----------
     level_ending = False
     screen_pause_frame = 0
-
     P1_Score, P2_Score = 0, 0
     p1_bullets, p2_bullets = [], []
     t1_bullets, t2_bullets, t3_bullets, t4_bullets, t5_bullets, t6_bullets = [], [], [], [], [], []
     t1_alt, t2_alt, t3_alt, t4_alt, t5_alt, t6_alt = 1, 1, 1, 1, 1, 1
-
     p1_slash = objects.P1SLASH()
     p2_slash = objects.P2SLASH()
-
     new_level()
-
     while not done:
         # Detect user input
         for event in pygame.event.get():
@@ -1560,10 +1548,7 @@ def START_GAME():
         if GRID:
             display_grid()
         # ------- ALL CODE TO DRAW SHOULD GO ABOVE THIS COMMENT --------
-
         live_music()
-
-
         # Limit to 60 frames per second
         clock.tick(0)
         FRAMES += 1
