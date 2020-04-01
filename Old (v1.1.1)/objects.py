@@ -50,7 +50,7 @@ class P1GUN(pygame.sprite.Sprite):
         self.change_y = 0
         self.level = None
 
-        self.image = pygame.image.load(constants.file_path + "SPRITES/SPRITES/GunIcon1.png").convert_alpha()
+        self.image = pygame.image.load("SPRITES/GunIcon1.png").convert_alpha()
         # Set a reference to the image rect.
         self.rect = self.image.get_rect()
 
@@ -62,7 +62,7 @@ class P1GUN(pygame.sprite.Sprite):
         # Move left/right
         self.rect.x += self.change_x
 
-        self.image = pygame.image.load(constants.file_path + "SPRITES/SPRITES/GunIcon1.png").convert_alpha()
+        self.image = pygame.image.load("SPRITES/GunIcon1.png").convert_alpha()
 
         # See if we hit anything
         # For platforms
@@ -171,7 +171,7 @@ class P2GUN(pygame.sprite.Sprite):
         self.change_y = 0
         self.level = None
 
-        self.image = pygame.image.load(constants.file_path + "SPRITES/GunIcon2.png").convert_alpha()
+        self.image = pygame.image.load("SPRITES/GunIcon2.png").convert_alpha()
         # Set a reference to the image rect.
         self.rect = self.image.get_rect()
 
@@ -183,7 +183,7 @@ class P2GUN(pygame.sprite.Sprite):
         # Move left/right
         self.rect.x += self.change_x
 
-        self.image = pygame.image.load(constants.file_path + "SPRITES/GunIcon2.png").convert_alpha()
+        self.image = pygame.image.load("SPRITES/GunIcon2.png").convert_alpha()
 
         # See if we hit anything
         # For platforms
@@ -292,7 +292,7 @@ class P1SWORD(pygame.sprite.Sprite):
         self.change_y = 0
         self.level = None
 
-        self.image = pygame.image.load(constants.file_path + "SPRITES/SwordIcon1.png").convert_alpha()
+        self.image = pygame.image.load("SPRITES/SwordIcon1.png").convert_alpha()
         # Set a reference to the image rect.
         self.rect = self.image.get_rect()
 
@@ -304,7 +304,7 @@ class P1SWORD(pygame.sprite.Sprite):
         # Move left/right
         self.rect.x += self.change_x
 
-        self.image = pygame.image.load(constants.file_path + "SPRITES/SwordIcon2.png").convert_alpha()
+        self.image = pygame.image.load("SPRITES/SwordIcon2.png").convert_alpha()
 
         # See if we hit anything
         # For platforms
@@ -413,7 +413,7 @@ class P2SWORD(pygame.sprite.Sprite):
         self.change_y = 0
         self.level = None
 
-        self.image = pygame.image.load(constants.file_path + "SPRITES/SwordIcon2.png").convert_alpha()
+        self.image = pygame.image.load("SPRITES/SwordIcon2.png").convert_alpha()
         # Set a reference to the image rect.
         self.rect = self.image.get_rect()
 
@@ -425,7 +425,7 @@ class P2SWORD(pygame.sprite.Sprite):
         # Move left/right
         self.rect.x += self.change_x
 
-        self.image = pygame.image.load(constants.file_path + "SPRITES/SwordIcon1.png").convert_alpha()
+        self.image = pygame.image.load("SPRITES/SwordIcon1.png").convert_alpha()
 
         # See if we hit anything
         # For platforms
@@ -531,7 +531,7 @@ class P1SLASH(pygame.sprite.Sprite):
         self.slash_frame_r = []
         self.slash_frame_l = []
         self.slash_none = []
-        sprite_sheet = SpriteSheet(constants.file_path + "SPRITES/p1_weapon_slash.png")
+        sprite_sheet = SpriteSheet("SPRITES/p1_weapon_slash.png")
 
         # Load all the right facing walking images into a list
         image = sprite_sheet.get_image(107, 218, 43, 43)
@@ -594,7 +594,7 @@ class P2SLASH(pygame.sprite.Sprite):
         self.slash_frame_r = []
         self.slash_frame_l = []
         self.slash_none = []
-        sprite_sheet = SpriteSheet(constants.file_path + "SPRITES/p2_weapon_slash.png")
+        sprite_sheet = SpriteSheet("SPRITES/p2_weapon_slash.png")
 
         # Load all the right facing walking images into a list
         image = sprite_sheet.get_image(107, 218, 43, 43)

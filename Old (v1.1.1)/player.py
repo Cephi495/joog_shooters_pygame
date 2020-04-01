@@ -19,6 +19,7 @@ player_2_win, player_1_win = False, False
 p1_touching_weapon, p2_touching_weapon = None, None
 
 active_sprite_list = pygame.sprite.Group()
+
 sprite1_group = pygame.sprite.Group()
 sprite2_group = pygame.sprite.Group()
 
@@ -29,8 +30,11 @@ def RESET_DATA():
     global grab_p1, grab_p2, p1_in_air, p2_in_air, p1_down_btn, p2_down_btn
     global player_2_win, player_1_win, p1_touching_weapon, p2_touching_weapon
     global active_sprite_list, sprite1_group, sprite2_group
+    P1_WEAPON_X = None
+    P1_WEAPON_Y = None
+    P2_WEAPON_X = None
+    P2_WEAPON_Y = None
 
-    P1_WEAPON_X, P1_WEAPON_Y, P2_WEAPON_X, P2_WEAPON_Y = None, None, None, None
     sprite_collided = False
     grab_p2, grab_p1 = False, False
     p1_in_air, p2_in_air = False, False
@@ -109,7 +113,7 @@ class Player1(pygame.sprite.Sprite):
 
         # For winning page
         self.Large = []
-        sprite_sheet = SpriteSheet(constants.file_path + "SPRITES/Player1_Large.png")
+        sprite_sheet = SpriteSheet("SPRITES/Player1_Large.png")
         image = sprite_sheet.get_image(60, 96, 190, 384)
         self.Large.append(image)
 
@@ -126,7 +130,7 @@ class Player1(pygame.sprite.Sprite):
         # List of sprites we can bump against
         self.level = None
 
-        sprite_sheet = SpriteSheet(constants.file_path + "SPRITES/Sprite1_sheet.png")
+        sprite_sheet = SpriteSheet("SPRITES/Sprite1_sheet.png")
 
         # Load all the right facing walking images into a list
         image = sprite_sheet.get_image(54, 8, 18, 32)
@@ -528,7 +532,7 @@ class Player2(pygame.sprite.Sprite):
 
         # For winning page
         self.Large = []
-        sprite_sheet = SpriteSheet(constants.file_path + "SPRITES/Player2_Large.png")
+        sprite_sheet = SpriteSheet("SPRITES/Player2_Large.png")
         image = sprite_sheet.get_image(60, 96, 190, 384)
         self.Large.append(image)
 
@@ -544,7 +548,7 @@ class Player2(pygame.sprite.Sprite):
 
         # List of sprites we can bump against
         self.level = None
-        sprite_sheet = SpriteSheet(constants.file_path + "SPRITES/Sprite2_sheet.png")
+        sprite_sheet = SpriteSheet("SPRITES/Sprite2_sheet.png")
 
         # Load all the right facing walking images into a list
         image = sprite_sheet.get_image(54, 8, 18, 32)

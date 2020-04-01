@@ -1,4 +1,4 @@
-import sys
+import pygame
 
 """
 Global constants
@@ -20,11 +20,5 @@ COMP_GREEN = (90, 240, 100)
 # Screen dimensions
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
-
-cwd = str(sys.argv[0])
-if cwd.endswith("/game.py"):
-    file_path = str(sys.argv[0])[:-7]
-else:
-    file_path = cwd[:-4]
 
 # TODO COMPLETED

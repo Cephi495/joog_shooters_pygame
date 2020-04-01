@@ -1,5 +1,5 @@
 import pygame
-import constants
+
 from spritesheet_function import SpriteSheet
 
 # These constants define our platform types:
@@ -34,7 +34,7 @@ class Platform(pygame.sprite.Sprite):
             code. """
         super().__init__()
 
-        sprite_sheet = SpriteSheet(constants.file_path + "SPRITES/platform_tiles_sheet_blue.png")
+        sprite_sheet = SpriteSheet("SPRITES/platform_tiles_sheet_blue.png")
         # Grab the image for this platform
         self.image = sprite_sheet.get_image(sprite_sheet_data[0],
                                             sprite_sheet_data[1],
@@ -53,7 +53,7 @@ class Query_Box(pygame.sprite.Sprite):
             code. """
         super().__init__()
 
-        sprite_sheet = SpriteSheet(constants.file_path + "SPRITES/?box.png")
+        sprite_sheet = SpriteSheet("SPRITES/?box.png")
         # Grab the image for this platform
         self.image = sprite_sheet.get_image(sprite_sheet_data[0],
                                             sprite_sheet_data[1],
@@ -66,7 +66,7 @@ class Query_Box(pygame.sprite.Sprite):
 class Turret(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.image = pygame.image.load(constants.file_path + "SPRITES/Joog_turret.png").convert_alpha()
+        self.image = pygame.image.load("SPRITES/Joog_turret.png").convert_alpha()
         self.rect = self.image.get_rect()
 
 

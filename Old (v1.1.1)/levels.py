@@ -2,7 +2,6 @@ import pygame
 import constants
 import platforms
 
-
 """
 
 BLUE SHORT      0       0       120     45
@@ -91,6 +90,9 @@ class Level_01(Level):
         # Call the parent constructor
         Level.__init__(self, player1, player2)
 
+        self.background = pygame.image.load("BACKDROPS/Pixelated_BG1.png").convert()
+        self.background.set_colorkey(constants.BLACK)
+
         self.platform_list.empty()
         self.query_box_list.empty()
         self.turret_list.empty()
@@ -127,11 +129,11 @@ class Level_01(Level):
                  ]
 
         turrets = [  # [platforms.TURRET, 385, 60],
-            # [platforms.TURRET, 385, 160],
-            [platforms.TURRET, 385, 230],
-            # [platforms.TURRET, 385, 360],
-            # [platforms.TURRET, 385, 440],
-            [platforms.TURRET, 385, 510],
+                    # [platforms.TURRET, 385, 160],
+                    [platforms.TURRET, 385, 230],
+                    # [platforms.TURRET, 385, 360],
+                    # [platforms.TURRET, 385, 440],
+                    [platforms.TURRET, 385, 510],
         ]
 
         # Go through the array above and add platforms
